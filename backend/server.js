@@ -2,8 +2,10 @@ const mongoose = require("mongoose");
 const Document = require("./document");
 const express = require("express");
 const cors = require("cors");
-
+const dotenv = require("dotenv"); 
 const app = express();
+dotenv.config();
+
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.header(
@@ -14,16 +16,15 @@ app.use((req, res, next) => {
   });
   
 
-const MongoClient = require("mongodb").MongoClient;
-const uri = "mongodb://localhost:27017/live-doc"; 
-
-MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
-  if (err) {
-    console.error("Error connecting to MongoDB:", err);
-    return;
-  }
-  const db = client.db(); 
-});
+  const url = process.env.MONGO_URL;
+  mongoose
+    .connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => {
+      console.log("Connected to MongoDB Atlas!");
+    })
+    .catch((error) => {
+      console.error("Failed to connect to MongoDB Atlas:", error);
+    });
 
 
 const io = require("socket.io")(3001, {
